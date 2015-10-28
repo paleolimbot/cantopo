@@ -247,7 +247,7 @@ public class ToporamaLoader {
 		if(FileUnZipper.unzipFiles(zipFile, tmpFolder)) {
 			File tiffFile = findTiffFile(tmpFolder) ;
 			if(tiffFile != null) {
-                //FIXME this fails and causes halt
+                //FIXME this fails and causes halt with no logcat output because of threading
 				Bitmap img = TiffBitmapFactory.decodeFile(tiffFile);
 
 				int tiffHeight = img.getHeight();
