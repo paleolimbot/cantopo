@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.fishandwhistle.ctexplorer.MainActivity" >
+
+    <item
+        android:id="@+id/action_location"
+        android:enabled="false"
+        android:title="@string/action_location_text" />
+    
+    <item
+        android:id="@+id/action_mark_location"
+        android:title="@string/action_mark_location" />
+    
+    <item
+        android:id="@+id/action_download_sheet"
+        android:title="@string/action_download_mapsheet_nomapsheets"/>
+    <item
+        android:id="@+id/action_remove_mapsheets"
+        android:title="@string/action_remove_mapsheets" />
+    <item
+        android:id="@+id/action_reload_mapsheets"
+        android:title="@string/action_reload_mapsheets" />
+
+</menu>

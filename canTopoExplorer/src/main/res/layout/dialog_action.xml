@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_action_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawableLeft="@drawable/ic_dialog_action"
+    android:padding="10dp"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:gravity="center_vertical"
+    android:background="@drawable/dialog_action_bg"
+    android:clickable="true" />

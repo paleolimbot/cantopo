@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Canada Topo</string>
+    
+    <string name="action_settings">Preferences</string>
+    <string name="action_layers">Layers</string>
+    <string name="action_grid_on">Turn Grid On</string>
+    <string name="action_grid_off">Turn Grid Off</string>
+    <string name="action_topo_options">Topo Options</string>
+    <string name="action_gps">GPS</string>
+    <string name="action_mylocation_on">Turn GPS On</string>
+    <string name="action_mylocation_off">Turn GPS Off</string>
+    <string name="action_search">Search</string>
+    <string name="action_measure">Measure</string>
+    <string name="action_measure_distance">Measure Distance</string>
+    <string name="action_measure_area">Measure Area</string>
+    <string name="action_measure_stop">Stop Measuring</string>
+    <string name="action_tracking_on">Start Tracking</string>
+    <string name="action_tracking_off">Stop Tracking</string>
+    <string name="action_mark_my_location">Mark My Location</string>
+    <string name="action_about">About</string>
+    <string name="action_location_manager">Waypoint/Track Manager</string>
+    <string name="action_trackview">View/Clear Tracks</string>
+    <string name="action_waypoints_on">Show Waypoints</string>
+    <string name="action_waypoints_off">Hide Waypoints</string>
+    
+    <string name="action_maptype_menu">Map Type</string>
+    <string name="action_maptype_map">Map</string>
+    <string name="action_maptype_satellite">Imagery</string>
+    <string name="action_maptype_hybrid">Hybrid</string>
+    <string name="action_maptype_terrain">Terrain</string>
+    <string name="action_maptype_none">None</string>
+    
+    <string name="action_location_text">Location Unavailable</string>
+    <string name="action_download_mapsheet" formatted="false">Download %s</string>
+    <string name="action_download_mapsheet_nomapsheets">No Mapsheets Available</string>
+    <string name="action_download_mapsheet_exists" formatted="false">Mapsheet %s complete</string>
+    <string name="action_remove_mapsheets" formatted="false">Remove all (%s)</string>
+    <string name="action_remove_mapsheets_50k" formatted="false">Remove sheet (%s)</string>
+    <string name="action_reload_mapsheets" formatted="false">Reload (%s)</string>
+    <string name="action_mark_location">Mark Location</string>
+    <string name="action_zoomin_to_download">Zoom in to download mapsheets</string>
+    
+    <string name="waypoint_title">Edit Waypoint</string>
+    <string name="waypoint_save">Save</string>
+    <string name="waypoint_delete">Delete Waypoint</string>
+    <string name="waypoint_cancel">Cancel</string>
+    <string name="waypoint_default_name" formatted="false">Waypoint %s</string>
+    <string name="waypoint_altitude" formatted="false">Altitude: %s %s</string>
+    <string name="waypoint_created" formatted="false">Created %s</string>
+    <string name="waypoint_error_noadd">Error adding waypoint</string>
+    <string name="waypoint_error_noupdate">Error updating waypoint</string>
+    <string name="waypoint_error_noname">Can\'t modify waypoint with no name.</string>
+    <string name="waypoint_error_nodelete">Error deleting waypoint.</string>
+    <string name="waypoint_hint_name">Waypoint Name</string>
+    <string name="waypoint_hint_description">Add Description</string>
+    <string name="waypoint_delete_title">Confirm Delete Waypoint</string>
+    <string name="waypoint_delete_message" formatted="false">Really delete waypoint %s?</string>
+    <string name="waypoint_delete_cancel">Cancel</string>
+    <string name="waypoint_export_title">Export Waypoint</string>
+    
+    <string-array name="waypoint_actions">
+        <item>View in Other Maps App</item>
+        <item>Export to GPX/KML</item>
+        <item>Delete Waypoint</item>
+    </string-array>
+    <string name="waypoint_action_viewchooser">Pick Maps App</string>
+    <string name="waypoint_error_nosaved">Can\'t delete a waypoint that isn\'t saved!</string>
+    
+    <string name="export_error_noactivity">No application available to share data!</string>
+    <string name="export_error_writeerror">Error writing file!</string>
+    <string name="export_kml">Export KML</string>
+    <string name="export_gpx">Export GPX</string>
+    <string name="export_choosemessage">Choose export format. KML will open in Google Earth, GPX is compatible with most GPS devices and programs.</string>
+    
+    <string name="track_title">Edit Track</string>
+    <string name="track_save">Save</string>
+    <string name="track_delete">Delete</string>
+    <string name="track_cancel">Cancel</string>
+    <string name="track_times" formatted="false">Started %s, ended %s.</string>
+    <string name="track_points">%s points</string>
+    <string name="track_error_noupdate">Error updating track.</string>
+    <string name="track_error_noname">Can\'t save track without a name.</string>
+    <string name="track_error_nodelete">Error deleting track.</string>
+    <string name="track_hint_name">Track Name</string>
+    <string name="track_hint_description">Add Description</string>
+    <string name="track_delete_title">Confirm Delete Track</string>
+    <string name="track_delete_message" formatted="false">Really delete %s?</string>
+    <string name="track_delete_cancel">Cancel</string>
+    
+    <string name="track_export_title">Export Track</string>
+    <string-array name="track_actions">
+        <item>Export to GPX/KML</item>
+        <item>Delete Track</item>
+    </string-array>
+    
+    <string name="manager_delete_title">Confirm Delete</string>
+    <string name="manager_delete_message" formatted="false">Are you sure you want to delete %s item(s)?</string>
+    <string name="manager_delete_cancel">Cancel</string>
+    <string name="manager_delete_delete">Delete</string>
+    <string name="manager_delete_waypoint_success" formatted="false">Deleted %s waypoints</string>
+    <string name="manager_error_nodelete">Could not delete all items!</string>
+    <string name="manager_nowaypoints">No waypoints to display</string>
+    <string name="manager_logging_track" formatted="false">%s (currently logging)</string>
+    <string name="manager_tracksubtext" formatted="false">Started %s, %s points</string>
+    <string name="manager_delete_track_success" formatted="false">Deleted %s tracks</string>
+    <string name="manager_notracks">No tracks to display</string>
+    <string name="manager_tab_waypoints">Waypoints</string>
+    <string name="manager_tab_tracks">Tracks</string>
+    
+    <string name="map_prog_title">Loading Mapsheet</string>
+    <string name="map_prog_message">Please Wait&#8230;</string>
+    
+    <string name="map_measure_distance" formatted="false">Distance: %s %s</string>
+    <string name="map_measure_area" formatted="false">Area: %s %s</string>
+    <string name="map_measure_helptext">Click to add points, long press to clear.</string>
+    
+    <string name="map_location_waiting">Waiting for updated location&#8230;</string>
+    <string name="map_location_not_available">Location not available</string>
+    
+    <string name="map_removesheets_title">Confirm Remove</string>
+    <string name="map_removesheets_message" formatted="false">Remove mapsheet %s%s? This will remove %s files (%s MB).</string>
+    <string name="map_removesheets_delete">Delete</string>
+    <string name="map_removesheets_cancel">Cancel</string>
+    
+    <string name="map_topopreview_message" formatted="false">About to download %s MB in downloading data for mapsheet %s%s. Do you wish to continue?</string>
+    <string name="map_topopreview_title">Download Mapsheet</string>
+    <string name="map_topopreview_download">Download</string>
+    <string name="map_topopreview_cancel">Cancel</string>
+    <string name="map_topopreview_starting_download">Starting Download</string>
+    <string name="map_topopreview_error">Loader returned with error %s</string>
+    
+    <string name="map_trackview_title">View Track</string>
+    <string name="map_trackview_cancel">Cancel</string>
+    <string name="map_trackview_cleartrack">Clear Current Track</string>
+    <string name="map_trackview_error_nopoints">No points to view!</string>
+
+    <string name="map_about_tour">Take The Tour</string>
+    <string name="map_about_cancel">Got it!</string>
+    
+    <string name="loader_lowres">Downloding low-resolution preview</string>
+    <string name="loader_hires">Downloading high-resolution image</string>
+    <string name="loader_processing">Processing images&#8230;</string>
+    <string name="loader_title" formatted="false">Downloading %s%s</string>
+    
+    <string name="transparency_title">Adjust Transparency</string>
+    <string name="transparency_transparent">Transparent</string>
+    <string name="transparency_opaque">Opaque</string>
+    <string name="transparency_done">Done</string>
+    <string name="transparency_show_topo">Show Topographic Maps</string>
+    
+    <string name="search_title">Search</string>
+    <string name="search_search">Search</string>
+    <string name="search_cancel">Cancel</string>
+    <string name="search_geocoding">Geocoding&#8230;</string>
+    <string name="search_error_noresults">No results found.</string>
+    <string name="search_error_nonetwork">No network available</string>
+    <string name="search_hint">Enter search text here</string>
+    
+    <string name="loc_manager_title">Location Manager</string>
+    <string name="action_select_on">Select Items</string>
+    <string name="action_select_off">Stop Selecting Items</string>
+    <string name="action_selectall">Select All</string>
+    <string name="action_delete">Delete Selected Items</string>
+    <string name="action_share">Share</string>
+    <string name="action_share_kml">Google Earth (KML)</string>
+    <string name="action_share_gpx">GPX</string>
+    
+    <string name="log_notification_message" formatted="false">Logged %s points (%s)</string>
+    <string name="log_default_track_name" formatted="false">Track %s</string>
+    
+    <string name="pref_title">Preferences</string>
+    <string name="pref_log_point_duration">Log Point Duration</string>
+    <string name="pref_log_point_duration_description">When tracking is enabled, select how often points should be logged.</string>
+
+    <string-array name="pref_log_point_choices">
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+    </string-array>
+    <string-array name="pref_log_point_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    
+    <string name="pref_units">Units</string>
+    <string name="pref_units_description">Change display units to metric or imperial.</string>
+    <string-array name="pref_units_choices">
+        <item>Metric (km, metres, etc.)</item>
+        <item>Imperial (miles, feet, flumpydumps, etc.)</item>
+    </string-array>
+    
+    <string-array name="pref_units_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    
+    <string name="pref_location_format">Location Format</string>
+    <string name="pref_location_format_description">Change display location format to UTM, Degrees/Decimal Minutes, or Decimal Degrees</string>
+    <string-array name="pref_location_format_choices">
+        <item>UTM</item>
+        <item>Degrees/Decimal Minutes</item>
+        <item>Decimal Degrees</item>
+    </string-array>
+    <string-array name="pref_location_format_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    
+    <string name="pref_library_location">Library Location</string>
+    <string name="pref_clear_library">Clear Map Library</string>
+</resources>

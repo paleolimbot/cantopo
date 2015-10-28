@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_select"
+        android:icon="@drawable/ic_action_select_on"
+        android:showAsAction="always"
+        android:title="@string/action_select_on"/>
+    <item
+        android:id="@+id/action_selectall"
+        android:icon="@drawable/ic_action_selectall"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_selectall"
+        android:visible="false"/>
+    <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/ic_action_share"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_share"
+        android:visible="false">
+        <menu>
+            <item
+                android:id="@+id/action_share_kml"
+                android:title="@string/action_share_kml" />
+            <item
+                android:id="@+id/action_share_gpx"
+                android:title="@string/action_share_gpx" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_delete"
+        android:icon="@drawable/ic_action_delete"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_delete"
+        android:visible="false"/>
+
+</menu>

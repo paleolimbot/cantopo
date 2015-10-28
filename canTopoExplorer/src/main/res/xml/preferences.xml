@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <ListPreference android:key="xml_units" android:summary="@string/pref_units_description" android:entryValues="@array/pref_units_values" android:entries="@array/pref_units_choices" android:title="@string/pref_units" />
+    <ListPreference android:summary="@string/pref_location_format_description" android:entries="@array/pref_location_format_choices" android:title="@string/pref_location_format" android:key="xml_location_format" android:entryValues="@array/pref_location_format_values" /><ListPreference android:key="xml_log_point_duration" android:summary="@string/pref_log_point_duration_description" android:title="@string/pref_log_point_duration" android:entryValues="@array/pref_log_point_values" android:entries="@array/pref_log_point_choices"/>
+    <Preference android:key="xml_library_location" android:title="@string/pref_library_location"/>
+    <Preference android:title="@string/pref_clear_library" android:key="xml_clear_library"/>
+    
+    
+    
+
+</PreferenceScreen>
