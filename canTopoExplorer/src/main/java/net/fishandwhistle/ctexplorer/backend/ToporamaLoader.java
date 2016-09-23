@@ -318,13 +318,13 @@ public class ToporamaLoader {
 	}
 
 	private String getPreviewUrl() {
-		String format = "http://ftp2.cits.nrcan.gc.ca/pub/toporama/50k/images/toporama_%s%s%s.jpg" ;
+		String format = "http://ftp.geogratis.gc.ca/pub/nrcan_rncan/raster/toporama/50k/images/toporama_%s%s%s.jpg" ;
 		String[] n = sheet.getNtsId().split("-") ;
 		return String.format(format, n[0], n[1].toLowerCase(Locale.US), n[2]) ;
 	}
 
 	private String getHiResUrl() {
-		String format = "http://ftp2.cits.nrcan.gc.ca/pub/toporama/50k_geo_tif/%s/%s/toporama_%s%s%s_geo.zip" ;
+		String format = "http://ftp.geogratis.gc.ca/pub/nrcan_rncan/raster/toporama/50k_geo_tif/%s/%s/toporama_%s%s%s_geo.zip" ;
 		String[] n = sheet.getNtsId().split("-") ;
 		return String.format(format, n[0], n[1].toLowerCase(Locale.US), n[0], n[1].toLowerCase(Locale.US), n[2]) ;
 	}
