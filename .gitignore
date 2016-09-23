@@ -1,5 +1,5 @@
-.gradle/
+.gradle
 canTopoExplorer.iws
-.idea/
+.idea
 build/
 .DS_Store

@@ -70,6 +70,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -82,7 +83,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 public class MapActivity extends Activity implements GoogleMap.OnCameraChangeListener, 
 ToporamaLoader.OnToporamaLoadListener, 
 GoogleMap.OnMapClickListener,
-GoogleMap.OnMapLongClickListener {
+GoogleMap.OnMapLongClickListener,
+        OnMapReadyCallback {
 
 	private static final String TAG = "MapActivity" ;
 	private static final String PREF_SAVED_CAMERA_POSITION = "camerapos" ;
@@ -269,7 +271,9 @@ GoogleMap.OnMapLongClickListener {
 
 	public void onResume() {
 		super.onResume();
-		this.setUpMapIfNeeded();
+        MapFragment fragment = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)) ;
+        fragment.getMapAsync(this);
+
 		if(loaderProgressShowing)
 			loaderProgress.show();
 		if(transparencyDialogShowing)
@@ -312,247 +316,242 @@ GoogleMap.OnMapLongClickListener {
 		super.onPause();
 	}
 
-	private void setUpMapIfNeeded() {
+	public void onMapReady(final GoogleMap map) {
 		// Do a null check to confirm that we have not already instantiated the map.
-		if (map == null) {
+		if (this.map == null) {
+            this.map = map;
 
-			MapFragment fragment = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)) ;
-			map = fragment.getMap() ;
+            // The Map is verified. It is now safe to manipulate the map.
+            Log.e(TAG, "setting up map! plus error to open log.") ;
 
+            SharedPreferences prefs = this.getPreferences(MODE_PRIVATE) ;
 
-			// Check if we were successful in obtaining the map.
-			if (map != null) {
-				// The Map is verified. It is now safe to manipulate the map.
-				Log.e(TAG, "setting up map! plus error to open log.") ;
+            this.setMapType(prefs.getInt(PREF_MAPTYPE, GoogleMap.MAP_TYPE_NORMAL));
 
-				SharedPreferences prefs = this.getPreferences(MODE_PRIVATE) ;
+            grid = new NTSGrid(this, map) ;
+            gridMajor = new NTSGridMajor(this, map) ;
+            downloadedImages = new NTSDownloadedImagesGrid(this, map) ;
 
-				this.setMapType(prefs.getInt(PREF_MAPTYPE, GoogleMap.MAP_TYPE_NORMAL));
+            this.setGridState(prefs.getBoolean(PREF_GRID_ON, true));
 
-				grid = new NTSGrid(this, map) ;
-				gridMajor = new NTSGridMajor(this, map) ;
-				downloadedImages = new NTSDownloadedImagesGrid(this, map) ;
+            images = new NTSImageTile(this, map) ;
+            this.setImagesState(prefs.getBoolean(PREF_TOPO_ON, true));
 
-				this.setGridState(prefs.getBoolean(PREF_GRID_ON, true));
+            this.registerForContextMenu(layout);
 
-				images = new NTSImageTile(this, map) ;
-				this.setImagesState(prefs.getBoolean(PREF_TOPO_ON, true));
+            transparencyDialog = new TransparencyDialog(this) ;
+            transparencyDialog.setMax(100);
+            transparencyDialog.setProgress(100);
 
-				this.registerForContextMenu(layout);
+            float savedTransparency = prefs.getFloat(PREF_MAP_TRANSPARENCY, 0) ;
+            int progress = Math.round((1 - savedTransparency) * 100) ;
+            transparencyDialog.setProgress(progress);
+            images.setTransparency(savedTransparency);
 
-				transparencyDialog = new TransparencyDialog(this) ;
-				transparencyDialog.setMax(100);
-				transparencyDialog.setProgress(100);
+            transparencyDialog.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
-				float savedTransparency = prefs.getFloat(PREF_MAP_TRANSPARENCY, 0) ;
-				int progress = Math.round((1 - savedTransparency) * 100) ;
-				transparencyDialog.setProgress(progress);
-				images.setTransparency(savedTransparency);
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    //do nothing
+                }
 
-				transparencyDialog.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    //do nothing
+                }
 
-					@Override
-					public void onStopTrackingTouch(SeekBar seekBar) {
-						//do nothing
-					}
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress,
+                        boolean fromUser) {
+                    float transparency = 1 - (float)(progress / 100.0) ;
+                    images.setTransparency(transparency);
+                    SharedPreferences.Editor edit = getPreferences(MODE_PRIVATE).edit() ;
+                    edit.putFloat(PREF_MAP_TRANSPARENCY, transparency) ;
+                    edit.commit() ;
+                }
+            });
+            transparencyDialog.setChecked(images.isEnabled());
+            transparencyDialog.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-					@Override
-					public void onStartTrackingTouch(SeekBar seekBar) {
-						//do nothing
-					}
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    setImagesState(isChecked) ;
+                    if(!isChecked)
+                        transparencyDialog.cancel();
+                }
+            });
+            transparencyDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
-					@Override
-					public void onProgressChanged(SeekBar seekBar, int progress,
-							boolean fromUser) {
-						float transparency = 1 - (float)(progress / 100.0) ;
-						images.setTransparency(transparency);
-						SharedPreferences.Editor edit = getPreferences(MODE_PRIVATE).edit() ;
-						edit.putFloat(PREF_MAP_TRANSPARENCY, transparency) ;
-						edit.commit() ;
-					}
-				});
-				transparencyDialog.setChecked(images.isEnabled());
-				transparencyDialog.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    transparencyDialogShowing = false ;
+                }
+            });
+            transparencyDialogShowing = false ;
 
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						setImagesState(isChecked) ;
-						if(!isChecked)
-							transparencyDialog.cancel();
-					}
-				});
-				transparencyDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            searchDialog = new SearchDialog(this) ;
+            searchDialogShowing = false ;
+            searchWaypointId = 0 ;
+            searchDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						transparencyDialogShowing = false ;
-					}
-				});
-				transparencyDialogShowing = false ;
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    searchDialogShowing = false ;
+                }
+            });
+            searchDialog.setOnAddressSelectedListener(new OnAddressSelectedListener() {
 
-				searchDialog = new SearchDialog(this) ;
-				searchDialogShowing = false ;
-				searchWaypointId = 0 ;
-				searchDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onAddressSelected(Address a, Bounds b) {
+                    CameraUpdate ud ;
+                    if(b != null) {
+                        LatLng sw = new LatLng(b.getMinY(), b.getMinX()) ;
+                        LatLng ne = new LatLng(b.getMaxY(), b.getMaxX()) ;
 
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						searchDialogShowing = false ;
-					}
-				});
-				searchDialog.setOnAddressSelectedListener(new OnAddressSelectedListener() {
+                        ud = CameraUpdateFactory.newLatLngBounds(new LatLngBounds(sw, ne), 10) ;
+                    } else {
+                        LatLng ll = new LatLng(a.getLatitude(), a.getLongitude()) ;
+                        ud = CameraUpdateFactory.newLatLng(ll) ;
+                    }
+                    String title = a.getAddressLine(0) ;
+                    String desc = a.getAddressLine(1) ;
+                    Waypoint w = new Waypoint() ;
+                    w.lat = a.getLatitude() ;
+                    w.lon = a.getLongitude() ;
+                    if(title != null)
+                        w.name = title ;
+                    if(desc != null)
+                        w.description = desc ;
+                    w.temporary = true ;
+                    waypoints.remove(searchWaypointId) ; //if exists
+                    searchWaypointId = waypoints.add(w) ;
+                    map.animateCamera(ud);
+                }
 
-					@Override
-					public void onAddressSelected(Address a, Bounds b) {
-						CameraUpdate ud ;
-						if(b != null) {
-							LatLng sw = new LatLng(b.getMinY(), b.getMinX()) ;
-							LatLng ne = new LatLng(b.getMaxY(), b.getMaxX()) ;
+            });
 
-							ud = CameraUpdateFactory.newLatLngBounds(new LatLngBounds(sw, ne), 10) ;
-						} else {
-							LatLng ll = new LatLng(a.getLatitude(), a.getLongitude()) ;
-							ud = CameraUpdateFactory.newLatLng(ll) ;
-						}
-						String title = a.getAddressLine(0) ;
-						String desc = a.getAddressLine(1) ;
-						Waypoint w = new Waypoint() ;
-						w.lat = a.getLatitude() ;
-						w.lon = a.getLongitude() ;
-						if(title != null)
-							w.name = title ;
-						if(desc != null)
-							w.description = desc ;
-						w.temporary = true ;
-						waypoints.remove(searchWaypointId) ; //if exists
-						searchWaypointId = waypoints.add(w) ;
-						map.animateCamera(ud);
-					}
+            measureDistanceTool = new MeasureTool(this, map) ;
+            measureDistanceTool.getPolylineOptions().width(8).color(Color.argb(127, 0, 0, 255)) ; //half transparent blue
+            measureDistanceTool.getStartMarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.green_circle))
+            .anchor(0.5f, 0.5f);
+            measureDistanceTool.setOnNewMeasuredDistanceListener(new OnNewMeasuredDistanceListener() {
 
-				});
+                @Override
+                public void onNewMeasuredDistance(double distanceKm,
+                        List<LatLng> points) {
+                    if(distanceKm != 0) {
+                        double distanceM = distanceKm * 1000 ;
+                        String[] units ;
+                        if(distanceM < 500) {
+                            units = ScaleBarView.UNITS_MED ;
+                        } else {
+                            units = ScaleBarView.UNITS_LG ;
+                        }
+                        String unit = units[Units.getUnitCategoryConstant(MapActivity.this)] ;
+                        double valueU = Units.fromSI(distanceM, unit) ;
 
-				measureDistanceTool = new MeasureTool(this, map) ;
-				measureDistanceTool.getPolylineOptions().width(8).color(Color.argb(127, 0, 0, 255)) ; //half transparent blue
-				measureDistanceTool.getStartMarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.green_circle))
-				.anchor(0.5f, 0.5f);
-				measureDistanceTool.setOnNewMeasuredDistanceListener(new OnNewMeasuredDistanceListener() {
+                        String num = new DecimalFormat("0.0").format(valueU) ;
+                        String text = String.format(getString(R.string.map_measure_distance), num, unit) ;
+                        statusText.setVisibility(View.VISIBLE);
+                        statusText.setText(text) ;
+                    } else {
+                        statusText.setVisibility(View.GONE);
+                    }
+                }
 
-					@Override
-					public void onNewMeasuredDistance(double distanceKm,
-							List<LatLng> points) {
-						if(distanceKm != 0) {
-							double distanceM = distanceKm * 1000 ;
-							String[] units ;
-							if(distanceM < 500) {
-								units = ScaleBarView.UNITS_MED ;
-							} else {
-								units = ScaleBarView.UNITS_LG ;
-							}
-							String unit = units[Units.getUnitCategoryConstant(MapActivity.this)] ;
-							double valueU = Units.fromSI(distanceM, unit) ;
+            });
 
-							String num = new DecimalFormat("0.0").format(valueU) ;
-							String text = String.format(getString(R.string.map_measure_distance), num, unit) ;
-							statusText.setVisibility(View.VISIBLE);
-							statusText.setText(text) ;
-						} else {
-							statusText.setVisibility(View.GONE);
-						}
-					}
+            measureAreaTool = new MeasureAreaTool(this, map) ;
+            measureAreaTool.getPolygonOptions().strokeWidth(1).fillColor(Color.argb(127, 0, 0, 255)) ; //half transparent blue
+            measureAreaTool.getStartMarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.green_circle)).anchor(0.5f, 0.5f); ;
+            measureAreaTool.setOnNewMeasuredAreaListener(new OnNewMeasuredAreaListener() {
 
-				});
+                @Override
+                public void onNewMeasuredArea(double areaKm2,
+                        List<LatLng> points) {
+                    if(areaKm2 != 0) {
+                        String[] units ;
+                        if(areaKm2 < 2.5) {
+                            units = new String[] {"ha", "acres"} ;
+                        } else {
+                            units = new String[] {"km2", "mi2"} ;
+                        }
+                        String unit = units[Units.getUnitCategoryConstant(MapActivity.this)] ;
+                        double valueU = Units.fromSI(1e6*areaKm2, unit) ;
 
-				measureAreaTool = new MeasureAreaTool(this, map) ;
-				measureAreaTool.getPolygonOptions().strokeWidth(1).fillColor(Color.argb(127, 0, 0, 255)) ; //half transparent blue
-				measureAreaTool.getStartMarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.green_circle)).anchor(0.5f, 0.5f); ;
-				measureAreaTool.setOnNewMeasuredAreaListener(new OnNewMeasuredAreaListener() {
+                        String num = new DecimalFormat("0.0").format(valueU) ;
+                        String label = unit.replace("2", "<sup>2</sup>") ;
 
-					@Override
-					public void onNewMeasuredArea(double areaKm2,
-							List<LatLng> points) {
-						if(areaKm2 != 0) {
-							String[] units ;
-							if(areaKm2 < 2.5) {
-								units = new String[] {"ha", "acres"} ;
-							} else {
-								units = new String[] {"km2", "mi2"} ;
-							}
-							String unit = units[Units.getUnitCategoryConstant(MapActivity.this)] ;
-							double valueU = Units.fromSI(1e6*areaKm2, unit) ;
+                        Spanned text = Html.fromHtml(String.format(getString(R.string.map_measure_area), num, label)) ;
+                        statusText.setVisibility(View.VISIBLE);
+                        statusText.setText(text) ;
+                    } else {
+                        statusText.setVisibility(View.GONE);
+                    }
+                }
 
-							String num = new DecimalFormat("0.0").format(valueU) ;
-							String label = unit.replace("2", "<sup>2</sup>") ;
+            });
+            setCurrentTool(null) ;
 
-							Spanned text = Html.fromHtml(String.format(getString(R.string.map_measure_area), num, label)) ;
-							statusText.setVisibility(View.VISIBLE);
-							statusText.setText(text) ;
-						} else {
-							statusText.setVisibility(View.GONE);
-						}
-					}
+            this.setupTrackingPolyline();
+            waypoints = new WaypointManager(this, map) ;
+            waypoints.cleanTemporary() ;
+            waypoints.setEnabled(true);
 
-				});
-				setCurrentTool(null) ;
+            waypointDialog = new WaypointDialog(this, waypoints) ;
+            waypointDialogShowing = false ;
 
-				this.setupTrackingPolyline();
-				waypoints = new WaypointManager(this, map) ;
-				waypoints.cleanTemporary() ;
-				waypoints.setEnabled(true);
+            map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
-				waypointDialog = new WaypointDialog(this, waypoints) ;
-				waypointDialogShowing = false ;
+                @Override
+                public void onInfoWindowClick(Marker m) {
+                    Waypoint w = waypoints.getWaypoint(m) ;
+                    if(w != null)
+                        launchWaypointEditor(w) ;
+                }
+            });
+            map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
-				map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onMarkerDrag(Marker arg0) {
+                    //do nothing
+                }
 
-					@Override
-					public void onInfoWindowClick(Marker m) {
-						Waypoint w = waypoints.getWaypoint(m) ;
-						if(w != null)
-							launchWaypointEditor(w) ;
-					}
-				});
-				map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragEnd(Marker m) {
+                    //update position
+                    Log.i(TAG, "end marker drag") ;
+                    Waypoint w = waypoints.getWaypoint(m) ;
+                    if(w != null) {
+                        LatLng pos = m.getPosition() ;
+                        w.lat = pos.latitude ;
+                        w.lon = pos.longitude ;
+                        if(!w.temporary)
+                            waypoints.update(w) ;
+                        else
+                            launchWaypointEditor(w) ;
+                    } else {
+                        Log.e(TAG, "could not find waypoint to go with marker") ;
+                    }
+                }
 
-					@Override
-					public void onMarkerDrag(Marker arg0) {
-						//do nothing						
-					}
+                @Override
+                public void onMarkerDragStart(Marker arg0) {
+                    //do nothing
+                }
+            });
 
-					@Override
-					public void onMarkerDragEnd(Marker m) {
-						//update position
-						Log.i(TAG, "end marker drag") ;
-						Waypoint w = waypoints.getWaypoint(m) ;
-						if(w != null) {
-							LatLng pos = m.getPosition() ;
-							w.lat = pos.latitude ;
-							w.lon = pos.longitude ;
-							if(!w.temporary)
-								waypoints.update(w) ;
-							else
-								launchWaypointEditor(w) ;
-						} else {
-							Log.e(TAG, "could not find waypoint to go with marker") ;
-						}
-					}
+            map.setMyLocationEnabled(getPreferences(MODE_PRIVATE).getBoolean(PREF_MAP_MYLOCATION, true));
+            map.setOnCameraChangeListener(this);
+            this.onCameraChange(map.getCameraPosition());
 
-					@Override
-					public void onMarkerDragStart(Marker arg0) {
-						//do nothing
-					}
-				});
+            this.invalidateOptionsMenu();
 
-				map.setMyLocationEnabled(getPreferences(MODE_PRIVATE).getBoolean(PREF_MAP_MYLOCATION, true));
-				map.setOnCameraChangeListener(this);
-				this.onCameraChange(map.getCameraPosition());
+            if(pendingUri != null) {
+                this.loadGeoUri(pendingUri);
+            }
+        }
 
-				this.invalidateOptionsMenu();
-				
-				if(pendingUri != null) {
-					this.loadGeoUri(pendingUri);
-				}
-			}
-		}
 	}
 
 	private void setupTrackingPolyline() {
