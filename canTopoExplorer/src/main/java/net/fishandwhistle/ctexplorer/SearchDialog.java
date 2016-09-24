@@ -24,7 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import ca.fwe.locations.geometry.Bounds;
+import fwe.locations.geometry.Bounds;
 
 
 public class SearchDialog extends CustomAlertDialog {

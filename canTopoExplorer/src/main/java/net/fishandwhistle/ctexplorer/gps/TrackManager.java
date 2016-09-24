@@ -13,7 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
-import ca.fwe.locations.geometry.LatLon;
+import fwe.locations.geometry.LatLon;
 
 import com.google.android.gms.maps.model.LatLng;
 

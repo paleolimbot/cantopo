@@ -15,8 +15,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import ca.fwe.locations.geometry.Bounds;
-import ca.fwe.locations.geometry.XY;
+import fwe.locations.geometry.Bounds;
+import fwe.locations.geometry.XY;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;

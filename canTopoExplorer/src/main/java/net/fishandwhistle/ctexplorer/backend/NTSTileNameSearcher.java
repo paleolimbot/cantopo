@@ -12,7 +12,7 @@ import java.util.Map;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.nts.NTSMapSheet;
 
 public class NTSTileNameSearcher {
 

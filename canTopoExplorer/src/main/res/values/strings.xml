@@ -120,7 +120,7 @@
     <string name="map_location_not_available">Location not available</string>
     
     <string name="map_removesheets_title">Confirm Remove</string>
-    <string name="map_removesheets_message" formatted="false">Remove mapsheet %s%s? This will remove %s files (%s MB).</string>
+    <string name="map_removesheets_message" formatted="false">Remove mapsheet %s%s? This will remove %d files (%s MB).</string>
     <string name="map_removesheets_delete">Delete</string>
     <string name="map_removesheets_cancel">Cancel</string>
     

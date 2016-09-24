@@ -8,9 +8,9 @@ import java.util.Set;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import ca.fwe.locations.geometry.Bounds;
-import ca.fwe.locations.geometry.XY;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.locations.geometry.Bounds;
+import fwe.locations.geometry.XY;
+import fwe.nts.NTSMapSheet;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;

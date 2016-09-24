@@ -9,7 +9,7 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.nts.NTSMapSheet;
 
 public class ToporamaLoaderService extends IntentService {
 

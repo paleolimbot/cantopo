@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Vibrator;
-import ca.fwe.locations.geometry.LatLon;
+import fwe.locations.geometry.LatLon;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;

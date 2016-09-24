@@ -3,8 +3,8 @@ package net.fishandwhistle.ctexplorer.tiles;
 import net.fishandwhistle.ctexplorer.backend.MapCacheManager;
 import android.content.Context;
 import android.graphics.Color;
-import ca.fwe.locations.geometry.Bounds;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.locations.geometry.Bounds;
+import fwe.nts.NTSMapSheet;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.PolygonOptions;

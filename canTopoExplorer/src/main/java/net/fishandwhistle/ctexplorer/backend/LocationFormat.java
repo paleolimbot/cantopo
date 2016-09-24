@@ -5,8 +5,8 @@ import java.text.DecimalFormat;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import ca.fwe.locations.geometry.LatLon;
-import ca.fwe.locations.utm.UTMRef;
+import fwe.locations.geometry.LatLon;
+import fwe.locations.utm.UTMRef;
 
 public class LocationFormat {
 	

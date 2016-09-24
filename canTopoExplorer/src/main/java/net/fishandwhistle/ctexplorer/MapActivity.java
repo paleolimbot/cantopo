@@ -28,6 +28,8 @@ import net.fishandwhistle.ctexplorer.tiles.NTSDownloadedImagesGrid;
 import net.fishandwhistle.ctexplorer.tiles.NTSGrid;
 import net.fishandwhistle.ctexplorer.tiles.NTSGridMajor;
 import net.fishandwhistle.ctexplorer.tiles.NTSImageTile;
+
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -38,12 +40,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
@@ -61,9 +66,9 @@ import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import ca.fwe.locations.geometry.Bounds;
-import ca.fwe.locations.geometry.LatLon;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.locations.geometry.Bounds;
+import fwe.locations.geometry.LatLon;
+import fwe.nts.NTSMapSheet;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -93,6 +98,8 @@ GoogleMap.OnMapLongClickListener,
 	private static final String PREF_MAPTYPE = "maptype" ;
 	private static final String PREF_MAP_TRANSPARENCY = "topo_transparency" ;
 	private static final String PREF_MAP_MYLOCATION = "location_enabled" ;
+    private static final int PERMISSION_REQUEST_SHOW_ON_MAP = 1 ;
+    private static final int PERMISSION_REQUEST_TRACKME = 2 ;
 
 	private GoogleMap map ;
 	private NTSGrid grid ;
@@ -303,7 +310,8 @@ GoogleMap.OnMapLongClickListener,
 	}
 
 	public void onPause() {
-		this.saveCameraPosition(map.getCameraPosition());
+		if(map != null)
+			this.saveCameraPosition(map.getCameraPosition());
 		if(loaderProgressShowing)
 			loaderProgress.dismiss();
 		if(transparencyDialogShowing)
@@ -541,7 +549,19 @@ GoogleMap.OnMapLongClickListener,
                 }
             });
 
-            map.setMyLocationEnabled(getPreferences(MODE_PRIVATE).getBoolean(PREF_MAP_MYLOCATION, true));
+            // show on map true by default
+            boolean showMeOnMap = getPreferences(MODE_PRIVATE).getBoolean(PREF_MAP_MYLOCATION, true) ;
+            if(showMeOnMap) {
+                if(checkLocationPermission()) {
+                    map.setMyLocationEnabled(true);
+                } else {
+                    Log.i("MapActivity", "requesting location permission...");
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_SHOW_ON_MAP);
+                }
+            } else {
+                map.setMyLocationEnabled(false);
+            }
+
             map.setOnCameraChangeListener(this);
             this.onCameraChange(map.getCameraPosition());
 
@@ -724,7 +744,7 @@ GoogleMap.OnMapLongClickListener,
 		SharedPreferences.Editor edit = this.getPreferences(MODE_PRIVATE).edit() ;
 		edit.putString(PREF_SAVED_CAMERA_POSITION, String.format("%s,%s,%s", cp.target.latitude, 
 				cp.target.longitude, cp.zoom)) ;
-		edit.commit() ;
+		edit.apply() ;
 	}
 
 	private CameraPosition getStoredCameraPosition() {
@@ -758,7 +778,7 @@ GoogleMap.OnMapLongClickListener,
 		this.invalidateOptionsMenu();
 		SharedPreferences.Editor edit = this.getPreferences(MODE_PRIVATE).edit() ;
 		edit.putBoolean(PREF_GRID_ON, state) ;
-		edit.commit() ;
+		edit.apply() ;
 	}
 
 	private void setImagesState(boolean state) {
@@ -766,14 +786,14 @@ GoogleMap.OnMapLongClickListener,
 		this.invalidateOptionsMenu();
 		SharedPreferences.Editor edit = this.getPreferences(MODE_PRIVATE).edit() ;
 		edit.putBoolean(PREF_TOPO_ON, state) ;
-		edit.commit() ;
+		edit.apply() ;
 	}
 
 	private void setMapType(int mapType) {
 		map.setMapType(mapType);
 		SharedPreferences.Editor edit = this.getPreferences(MODE_PRIVATE).edit() ;
 		edit.putInt(PREF_MAPTYPE, mapType) ;
-		edit.commit() ;
+		edit.apply() ;
 		this.invalidateOptionsMenu();
 	}
 
@@ -943,16 +963,29 @@ GoogleMap.OnMapLongClickListener,
 				i.setAction(TrackerBroadcastReceiver.ACTION_STOP_LOGGING) ;
 				sendBroadcast(i) ;
 			} else {
-				Intent i = new Intent(this, TrackerBroadcastReceiver.class) ;
-				i.setAction(TrackerBroadcastReceiver.ACTION_START_LOGGING) ;
-				sendBroadcast(i) ;
+                if(!checkLocationPermission()) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_TRACKME);
+                } else {
+                    Intent i = new Intent(this, TrackerBroadcastReceiver.class);
+                    i.setAction(TrackerBroadcastReceiver.ACTION_START_LOGGING);
+                    sendBroadcast(i);
+                }
 			}
 			return true ;
 		} else if(id == R.id.action_mylocation) {
-			map.setMyLocationEnabled(!map.isMyLocationEnabled());
-			getPreferences(MODE_PRIVATE).edit()
-			.putBoolean(PREF_MAP_MYLOCATION, map.isMyLocationEnabled())
-			.commit();
+            if(!map.isMyLocationEnabled()) {
+                if(checkLocationPermission()) {
+                    map.setMyLocationEnabled(true);
+                } else {
+                    Log.i("MapActivity", "requesting location permission...");
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_SHOW_ON_MAP);
+                }
+            } else {
+                map.setMyLocationEnabled(false);
+            }
+            getPreferences(MODE_PRIVATE).edit()
+                    .putBoolean(PREF_MAP_MYLOCATION, map.isMyLocationEnabled())
+                    .apply();
 			this.invalidateOptionsMenu();
 			return true ;			
 		} else if(id == R.id.action_mark_my_location) {
@@ -1140,6 +1173,10 @@ GoogleMap.OnMapLongClickListener,
 	private void showAboutDialog() {
 		AlertDialog.Builder b = new AlertDialog.Builder(this) ;
 		String title = "About Canada Topo" ;
+        String updateMes = "Thanks for holding tight on the NO_FILE_ON_SERVER error (if you don't know what " +
+                "I'm talking about skip this paragraph)! And thanks to Rich for giving me the $5 that kept me " +
+                "up at night feeling guilty that I hadn't fixed the app yet. I know there are more " +
+                "improvements that are needed, but at least you're back to functional now! Cheers!" ;
 		String mes = "Canada Topo is designed to display the National Topographic System (NTS) "
 				+ "grid for Canada and display Topo maps published for free by the government. "
 				+ "It also does other things, but maybe not as well as other apps out there. "
@@ -1153,7 +1190,7 @@ GoogleMap.OnMapLongClickListener,
 				+ "(something that happens to me all the time when I hike/canoe/kayak). In short...don't "
 				+ "be an idiot! But more information means better decisions, so use and enjoy!" ;
 		b.setTitle(title) ;
-		b.setMessage(mes + "\n\n" + message) ;
+		b.setMessage(updateMes + "\n\n" + mes + "\n\n" + message) ;
 		b.setNeutralButton("Rate This App!", new DialogInterface.OnClickListener() {
 			
 			@Override
@@ -1309,6 +1346,49 @@ GoogleMap.OnMapLongClickListener,
 		}
 
 	}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_SHOW_ON_MAP:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // do the showing on map thing
+                    try {
+                        map.setMyLocationEnabled(true);
+                    } catch(SecurityException e) {
+                        //will never happen
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "Cannot display GPS location without GPS permission!",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case PERMISSION_REQUEST_TRACKME:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // start tracking
+                    Intent i = new Intent(this, TrackerBroadcastReceiver.class);
+                    i.setAction(TrackerBroadcastReceiver.ACTION_START_LOGGING);
+                    sendBroadcast(i);
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "Cannot track using GPS location without GPS permission!",
+                            Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
+
+    public boolean checkLocationPermission() {
+        String permission = "android.permission.ACCESS_FINE_LOCATION";
+        int res = ContextCompat.checkSelfPermission(this, permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
 
 	private void loadGeoUri(Uri uri) {
 		Waypoint w = new Waypoint() ;

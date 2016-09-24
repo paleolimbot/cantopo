@@ -10,14 +10,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
 
-import org.beyka.tiffbitmapfactory.TiffBitmapFactory;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.util.Log;
-import ca.fwe.nts.NTSMapSheet;
+
+import org.beyka.tiffbitmapfactory.TiffBitmapFactory;
+
+import fwe.nts.NTSMapSheet;
 
 public class ToporamaLoader {
 
@@ -257,7 +258,7 @@ public class ToporamaLoader {
 				int blockHeight = tiffHeight / 3 ;
 				try {
 					for(int i=0; i<3; i++) {
-						Bitmap b = Bitmap.createBitmap(img, i*blockHeight*tiffWidth, tiffWidth, tiffWidth, blockHeight) ;
+						Bitmap b = Bitmap.createBitmap(img, 0, i*blockHeight, tiffWidth, blockHeight) ;
 						splitBitmapInto4(b, NTSMapSheet.MAP_BLOCK[2-i]) ;
 
 						b.recycle();

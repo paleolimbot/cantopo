@@ -10,16 +10,16 @@ import net.fishandwhistle.ctexplorer.gps.TrackManager.Track;
 import net.fishandwhistle.ctexplorer.gps.WaypointManager.Waypoint;
 import android.content.Context;
 import android.util.Log;
-import ca.fwe.locations.geometry.LatLon;
-import ca.fwe.locations.gpx.GPXFile;
-import ca.fwe.locations.gpx.GPXTrack;
-import ca.fwe.locations.gpx.GPXTrackpoint;
-import ca.fwe.locations.gpx.GPXWaypoint;
-import ca.fwe.locations.kml.KMLDocument;
-import ca.fwe.locations.kml.KMLFolder;
-import ca.fwe.locations.kml.LinePlacemark;
-import ca.fwe.locations.kml.Placemark;
-import ca.fwe.locations.kml.PointPlacemark;
+import fwe.locations.geometry.LatLon;
+import fwe.locations.gpx.GPXFile;
+import fwe.locations.gpx.GPXTrack;
+import fwe.locations.gpx.GPXTrackpoint;
+import fwe.locations.gpx.GPXWaypoint;
+import fwe.locations.kml.KMLDocument;
+import fwe.locations.kml.KMLFolder;
+import fwe.locations.kml.LinePlacemark;
+import fwe.locations.kml.Placemark;
+import fwe.locations.kml.PointPlacemark;
 
 public class FileExporter {
 	

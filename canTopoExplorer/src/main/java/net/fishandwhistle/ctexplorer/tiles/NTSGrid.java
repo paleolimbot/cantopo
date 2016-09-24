@@ -1,8 +1,8 @@
 package net.fishandwhistle.ctexplorer.tiles;
 
 import android.content.Context;
-import ca.fwe.locations.geometry.Bounds;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.locations.geometry.Bounds;
+import fwe.nts.NTSMapSheet;
 
 import com.google.android.gms.maps.GoogleMap;
 

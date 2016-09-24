@@ -6,10 +6,10 @@ import java.util.List;
 import android.content.Context;
 import android.os.Vibrator;
 import android.widget.Toast;
-import ca.fwe.locations.geometry.LatLon;
-import ca.fwe.locations.geometry.Vector;
-import ca.fwe.locations.utm.UTMRef;
-import ca.fwe.locations.utm.UTMZone;
+import fwe.locations.geometry.LatLon;
+import fwe.locations.geometry.Vector;
+import fwe.locations.utm.UTMRef;
+import fwe.locations.utm.UTMZone;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;

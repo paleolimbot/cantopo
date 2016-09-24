@@ -4,14 +4,15 @@ import net.fishandwhistle.ctexplorer.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import ca.fwe.locations.geometry.Bounds;
-import ca.fwe.locations.geometry.XY;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.locations.geometry.Bounds;
+import fwe.locations.geometry.XY;
+import fwe.nts.NTSMapSheet;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -90,8 +91,8 @@ public class GeoMapSheet {
 		try {
 			overlay = map.addGroundOverlay(goo) ;
 		} catch(NullPointerException e) {
-			//TODO diagnostic throw because null pointer exception was thrown.
-			throw new NullPointerException("NullPointerException on addGroundOverlay for sheet " + sheet.getNtsId() + " and goo " + goo) ;
+			//problem is due to cancelled download
+			Log.e("GeoMapSheet", "NullPointerException on addGroundOverlay for sheet " + sheet.getNtsId() + "...corrupted file?") ;
 		}
 		return overlay ;
 	}

@@ -9,7 +9,7 @@ import java.util.Random;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
-import ca.fwe.nts.NTSMapSheet;
+import fwe.nts.NTSMapSheet;
 
 public class MapCacheManager {
 

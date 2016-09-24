@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import android.net.Uri;
 import android.util.Log;
-import ca.fwe.locations.geometry.Bounds;
+import fwe.locations.geometry.Bounds;
 
 public class WebGeocoder {
 
