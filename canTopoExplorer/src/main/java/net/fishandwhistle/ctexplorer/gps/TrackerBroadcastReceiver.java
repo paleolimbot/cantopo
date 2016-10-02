@@ -25,7 +25,7 @@ public class TrackerBroadcastReceiver extends WakefulBroadcastReceiver {
 
 	private static final String PREF_LAST_POINT_LOGGED = "last_point_logged" ;
 
-	private static final String TAG = "TrackerBroadcastReceiver" ;
+	private static final String TAG = "TrackerBroadcastReceive" ;
 
 	public static final String ACTION_LOG_POINT = "net.fishandwhistle.ctexplorer.LOG_POINT" ;
 	public static final String ACTION_START_LOGGING = "net.fishandwhistle.ctexplorer.START_LOGGING" ;
@@ -40,6 +40,7 @@ public class TrackerBroadcastReceiver extends WakefulBroadcastReceiver {
 	public static final String ACTION_ENSURE_STATE = "net.fishandwhistle.ctexplorer.ENSURE_STATE" ;
 
 	private static final int TRACKING_NOTIFICATION_ID = 11 ;
+    private static final float POINT_ACCURAY_CUTOFF = 500 ; // meters
 
 	private TrackManager tracks ;
 
@@ -137,11 +138,11 @@ public class TrackerBroadcastReceiver extends WakefulBroadcastReceiver {
 			am.setRepeating(AlarmManager.RTC_WAKEUP, lastLogged+updateI, updateI, pi);
 			prefs.edit()
 				.putLong(PREF_LAST_POINT_LOGGED, System.currentTimeMillis())
-				.commit() ;
+				.apply() ;
 			Log.i(TAG, "set alarm to log point at update interval") ;
 		} else {
 			am.cancel(pi);
-			prefs.edit().putLong(PREF_LAST_POINT_LOGGED, 0).commit() ;
+			prefs.edit().putLong(PREF_LAST_POINT_LOGGED, 0).apply() ;
 			LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE) ;
 			lm.removeUpdates(getAcquiredPendingIntent(context));
 		}
@@ -149,17 +150,22 @@ public class TrackerBroadcastReceiver extends WakefulBroadcastReceiver {
 
 	private void onPointAcquired(Context context, Intent intent) {
 		this.setupTrackManager(context);
-		Location l = (Location)intent.getParcelableExtra(LocationManager.KEY_LOCATION_CHANGED) ;
+		Location l = intent.getParcelableExtra(LocationManager.KEY_LOCATION_CHANGED) ;
 		if(l != null) {
 			Log.i(TAG, "point received: lat:" + l.getLatitude() + " + lon:" + l.getLongitude() + " accuracy:" + l.getAccuracy()) ;
-			long id = tracks.addPoint(l.getLatitude(),
-					l.getLongitude(),
-					l.getAltitude(),
-					l.getAccuracy(),
-					l.getTime()) ;
-			Log.i(TAG, "added point with id " + id) ;
-			Intent i = new Intent(TrackerBroadcastReceiver.ACTION_NEW_POINT) ;
-			context.sendBroadcast(i) ;
+			// reject points without a certain degree of accuracy
+            if(l.getAccuracy() <= POINT_ACCURAY_CUTOFF) {
+                long id = tracks.addPoint(l.getLatitude(),
+                        l.getLongitude(),
+                        l.getAltitude(),
+                        l.getAccuracy(),
+                        l.getTime());
+                Log.i(TAG, "added point with id " + id);
+                Intent i = new Intent(TrackerBroadcastReceiver.ACTION_NEW_POINT) ;
+                context.sendBroadcast(i) ;
+            } else {
+                Log.e(TAG, String.format("did not add point because accuracy was too coarse (%s m)", l.getAccuracy()));
+            }
 			this.ensureNotificationState(context);
 		} else {
 			Log.e(TAG, "no location extra on point acquired intent!") ;
@@ -171,14 +177,18 @@ public class TrackerBroadcastReceiver extends WakefulBroadcastReceiver {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context) ;
 		prefs.edit()
 			.putLong(PREF_LAST_POINT_LOGGED, System.currentTimeMillis())
-			.commit() ;
+			.apply() ;
 		
 		PendingIntent pi = getAcquiredPendingIntent(context) ;
 		LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE) ;
 		Criteria criteria = new Criteria() ;
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
-		lm.requestSingleUpdate(criteria, pi);
+        try {
+            lm.requestSingleUpdate(criteria, pi);
+        } catch(SecurityException e) {
+            Log.e(TAG, "Security exception in TrackerBroadcastReceiver!");
+        }
 	}
 
 	private PendingIntent getAcquiredPendingIntent(Context context) {

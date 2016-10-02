@@ -291,23 +291,19 @@ GoogleMap.OnMapLongClickListener,
 			waypointDialog.show();
 		this.registerReceiver(refreshReceiver, refreshIntentFilter) ;
 		this.registerReceiver(refreshReceiver, logPointFilter) ;
-		this.setupTrackingPolyline();
-		//set scale unit category in case preference changed
-		if(scaleBar != null)
-			scaleBar.refreshUnitCategory();
-		//make sure currently displayed track still exists
-		if(trackViewId != -1) {
-			Track t = trackManager.getTrack(trackViewId) ;
-			if(t == null)
-				this.setViewTrackPolyline(-1);
-		}
-		//refresh waypoints in case waypoints were deleted
-		if(map != null) {
-			waypoints.removeAllMarkers();
-			waypoints.refreshMarkers();
-		}
-
 	}
+
+	public void onMapResume(GoogleMap map) {
+        this.setupTrackingPolyline();
+        if(scaleBar != null)
+            scaleBar.refreshUnitCategory();
+        //make sure currently displayed track still exists
+        if(trackViewId != -1) {
+            Track t = trackManager.getTrack(trackViewId);
+            if (t == null)
+                this.setViewTrackPolyline(-1);
+        }
+    }
 
 	public void onPause() {
 		if(map != null)
@@ -572,6 +568,8 @@ GoogleMap.OnMapLongClickListener,
             }
         }
 
+        this.onMapResume(map);
+
 	}
 
 	private void setupTrackingPolyline() {
@@ -581,15 +579,12 @@ GoogleMap.OnMapLongClickListener,
 		if(trackId != -1) {
 			List<LatLng> points = trackManager.getTrackPoints(trackId) ;
 			if(points.size() > 1) {
-				if(trackPolyline == null) {
-					PolylineOptions plo = new PolylineOptions() ;
-					plo.width(5) ;
-					plo.color(Color.argb(127, 0, 0, 0)) ;
-					plo.addAll(points) ;
-					trackPolyline = map.addPolyline(plo) ;
-				} else {
-					trackPolyline.setPoints(points);
-				}
+                PolylineOptions plo = new PolylineOptions() ;
+                plo.width(5) ;
+                plo.color(Color.argb(127, 0, 0, 0)) ;
+                plo.addAll(points) ;
+                trackPolyline = map.addPolyline(plo) ;
+                //reusing trackPolyline has caused crash in the past for new google services lib
 			}
 		} else {
 			if(trackPolyline != null) {
