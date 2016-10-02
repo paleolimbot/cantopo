@@ -38,12 +38,9 @@ public class MapCacheManager {
 		tempFiles = new ArrayList<File>() ;
 		cachingEnabled = false ;
 		cachedFileList = new ArrayList<String>() ;
-		File[] files = context.getCacheDir().listFiles() ;
-		if(files != null) {
-			for(File file: files) {
-				Log.i(TAG, "opening cache manager, uncleaned file: " + file) ;
-			}
-		}
+        for(File file: listFilesSafe(context.getCacheDir())) {
+            Log.i(TAG, "opening cache manager, uncleaned file: " + file) ;
+        }
 	}
 
 	public void setCachingEnabled(boolean flag) {
@@ -60,7 +57,7 @@ public class MapCacheManager {
 				cachedFileList = new ArrayList<String>() ;
 			else
 				cachedFileList.clear();
-			for(File f: getMapCacheFolder().listFiles()) {
+			for(File f: listFilesSafe(getMapCacheFolder())) {
 				cachedFileList.add(f.getName()) ;
 			}
 		}
@@ -190,7 +187,7 @@ public class MapCacheManager {
 	public long[] cacheSize() {
 		int size = 0 ;
 		int count = 0 ;
-		for(File f: getMapCacheFolder().listFiles()) {
+		for(File f: listFilesSafe(getMapCacheFolder())) {
 			size += f.length() ;
 			count++ ;
 		}
@@ -222,7 +219,7 @@ public class MapCacheManager {
 		boolean dir = false ;
 		if(f.isDirectory()) {
 			dir = true ;
-			for(File g: f.listFiles()) {
+			for(File g: listFilesSafe(f)) {
 				deleted += delete(g) ;
 			}
 			Log.i(TAG, "cleaned directory file " + f) ;
@@ -238,6 +235,15 @@ public class MapCacheManager {
 		}
 		return deleted ;
 	}
+
+	private static File[] listFilesSafe(File f) {
+        File[] out = f.listFiles();
+        if(out == null) {
+            return new File[] {};
+        } else {
+            return out;
+        }
+    }
 
 	private static String randomString() {
 		char[] out = new char[5] ;

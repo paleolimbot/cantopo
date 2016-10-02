@@ -100,6 +100,7 @@ GoogleMap.OnMapLongClickListener,
 	private static final String PREF_MAP_MYLOCATION = "location_enabled" ;
     private static final int PERMISSION_REQUEST_SHOW_ON_MAP = 1 ;
     private static final int PERMISSION_REQUEST_TRACKME = 2 ;
+    private static final int PERMISSION_REQUEST_EXTERNALSTORAGE = 3;
 
 	private GoogleMap map ;
 	private NTSGrid grid ;
@@ -579,6 +580,9 @@ GoogleMap.OnMapLongClickListener,
 		if(trackId != -1) {
 			List<LatLng> points = trackManager.getTrackPoints(trackId) ;
 			if(points.size() > 1) {
+                if(trackPolyline != null) {
+                    trackPolyline.remove();
+                }
                 PolylineOptions plo = new PolylineOptions() ;
                 plo.width(5) ;
                 plo.color(Color.argb(127, 0, 0, 0)) ;
@@ -1217,6 +1221,11 @@ GoogleMap.OnMapLongClickListener,
 	}
 
 	private void startToporamaInfoLoader(NTSMapSheet sheet) {
+        //need to check external storage writing permissions
+        if(!checkExternalStoragePermission()) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_EXTERNALSTORAGE);
+
+        }
 		if(loader != null)
 			loader.cancel();
 		loader = new ToporamaLoader(MapActivity.this, longPressMapSheet, false) ;
@@ -1376,11 +1385,29 @@ GoogleMap.OnMapLongClickListener,
                     Toast.makeText(this, "Cannot track using GPS location without GPS permission!",
                             Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case PERMISSION_REQUEST_EXTERNALSTORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // start tracking
+                    this.startToporamaInfoLoader(longPressMapSheet);
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "Cannot download mapsheets without external storage permission",
+                            Toast.LENGTH_SHORT).show();
+                }
         }
     }
 
     public boolean checkLocationPermission() {
         String permission = "android.permission.ACCESS_FINE_LOCATION";
+        int res = ContextCompat.checkSelfPermission(this, permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+    public boolean checkExternalStoragePermission() {
+        String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
         int res = ContextCompat.checkSelfPermission(this, permission);
         return (res == PackageManager.PERMISSION_GRANTED);
     }
