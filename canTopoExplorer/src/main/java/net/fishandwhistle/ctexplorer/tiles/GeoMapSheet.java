@@ -90,11 +90,15 @@ public class GeoMapSheet {
 		this.getGroundOverlayOptions() ;
 		try {
 			overlay = map.addGroundOverlay(goo) ;
-		} catch(NullPointerException e) {
+            return overlay ;
+        } catch(NullPointerException e) {
 			//problem is due to cancelled download
 			Log.e("GeoMapSheet", "NullPointerException on addGroundOverlay for sheet " + sheet.getNtsId() + "...corrupted file?") ;
+            return null;
+		} catch(IllegalArgumentException e) {
+            Log.e("GeoMapSheet", "IllegalArgumentException on addGroundOverlay for sheet " + sheet.getNtsId() + "...corrupted file?") ;
+            return null;
 		}
-		return overlay ;
 	}
 
 	public Polygon addPolygon(GoogleMap map) {

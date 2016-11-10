@@ -4,11 +4,15 @@ import java.io.File;
 
 import net.fishandwhistle.ctexplorer.backend.MapCacheManager;
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
+
 import fwe.locations.geometry.Bounds;
 import fwe.nts.NTSMapSheet;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
 
 public class NTSImageTile extends NTSTileManager {
 
@@ -55,8 +59,17 @@ public class NTSImageTile extends NTSTileManager {
 
 	@Override
 	protected void addToMap(GoogleMap map, GeoMapSheet sheet) {
-		if(sheet.hasGroundOverlayOptions())
-			sheet.addGroundOverlay(map) ;
+		if(sheet.hasGroundOverlayOptions()) {
+			GroundOverlay result = sheet.addGroundOverlay(map);
+            if(result == null) {
+                Toast.makeText(context, "Error adding " + sheet.getNTSSheet().getNtsId(), Toast.LENGTH_SHORT).show();
+                // delete offending file (is probably corrupted)
+                File mapfile = cache.getMapFile(sheet.getNTSSheet()) ;
+                if(!mapfile.delete()) {
+                    Log.e("NTSImageTile", "addToMap: failed to delete " + mapfile);
+                }
+            }
+		}
 	}
 
 }
