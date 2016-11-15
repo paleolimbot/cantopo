@@ -62,12 +62,9 @@ public class NTSImageTile extends NTSTileManager {
 		if(sheet.hasGroundOverlayOptions()) {
 			GroundOverlay result = sheet.addGroundOverlay(map);
             if(result == null) {
-                Toast.makeText(context, "Error adding " + sheet.getNTSSheet().getNtsId(), Toast.LENGTH_SHORT).show();
-                // delete offending file (is probably corrupted)
-                File mapfile = cache.getMapFile(sheet.getNTSSheet()) ;
-                if(!mapfile.delete()) {
-                    Log.e("NTSImageTile", "addToMap: failed to delete " + mapfile);
-                }
+                Log.e("NTSImageTile", "Error adding " + sheet.getNTSSheet().getNtsId());
+                // do not delete file DO NOT DO IT it is just downloading
+				// deleting this file causes many problems
             }
 		}
 	}
